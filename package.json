@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "client": "cd client && npm start",
-    "start": "concurrently \"npm run server\" cd ../client && npm start\"",
+    "start": "node server.js",
     "server": "nodemon server.js"
   },
   "author": "",
