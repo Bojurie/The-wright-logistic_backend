@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser')
+const nodemailer = require('nodemailer')
 const mongoose = require('./database')
 const pino = require('express-pino-logger');
 const middleware = require('./middleware')

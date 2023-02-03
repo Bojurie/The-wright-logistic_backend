@@ -2,44 +2,54 @@ var express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-var router = express.Router();
+// router.use(bodyParser.json());
+// router.use(bodyParser.urlencoded({extended: true}))
+// router.use(cors())
 
-router.post('/', urlencodedParser, function(req, res){
- console.log(req.body)
- res.render('contact', {qs: req.query});
+const router = express.Router();
 
-   let transporter = nodemailer.createTransport({
-     service: 'gmail',
-     auth: {
-       user: 'bojurier@gmail.com', // generated ethereal user
-       pass: process.env.EMAIL_SECRET_PASS // generated ethereal password
-     },
-     
- });
- const mailOption = {
-   name: req.body.name,
-   phone: req.body.phone,
-   subject: req.body.subject,
-   from: req.body.email,
-   to: 'thewrightlogistic@gmail.com',
-   text: req.body.message
+router.post('/', (req, res) =>{
+    const data = req.body
+       let setupTransport = nodemailer.createTransport({
+       service: 'gmail',
+       port: 465,
+       auth: {
+          user: 'thewrightlogistic@gmail.com', // generated ethereal user
+          pass: process.env.EMAIL_SECRET_PASS // generated ethereal password
+        },
+      });
 
- }
- transporter.sendMail(mailOption, (error, info) =>{
-   if(error){
-     console.log(error)
-     res.send('error')
-   } else {
-     console.log('Email sent: ' + info.response)
-     res.send('Success')
-   }
- })
-});
+   
+    const mailOptions = {
+      from: data.email,
+      to: 'thewrightlogistic@gmail.com',
+      subject: `Message from ${data.subject}`,
+      html: `
+      <h3>Information</h3>
+      <ul>
+      <li>Full Name: ${data.fullName}</li>
+      <li>Phone: ${data.phone}</li>
+      <li>Email: ${data.email}</li>
+      </ul>
 
-router.get('/contact', (req, res) =>{
-  res.render('contact', {tite: 'Contact', paragraph: 'Thank You For your Message'})
-})
+      <h3>Message</h3>
+      <p>${data.message}</p>
+      `
+    };
+
+  setupTransport.sendEmail =(mailOptions, (err, res) =>{
+      if(err){
+        console.log(err)
+        res.send(err)
+      } else {
+        res.send('Your message was sent successfully')
+      }
+    })  
+
+  setupTransport.closed();
+  
+  
+  });
 
 module.exports = router;
