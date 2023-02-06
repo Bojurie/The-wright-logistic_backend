@@ -1,7 +1,5 @@
-var express = require('express');
-const bodyParser = require('body-parser');
-const nodemailer = require('nodemailer');
-
+const express = require('express');
+const EmailSender = require('../sendMail');
 
 // router.use(bodyParser.json());
 // router.use(bodyParser.urlencoded({extended: true}))
@@ -9,47 +7,16 @@ const nodemailer = require('nodemailer');
 
 const router = express.Router();
 
-router.post('/', (req, res) =>{
-    const data = req.body
-       let setupTransport = nodemailer.createTransport({
-       service: 'gmail',
-       port: 465,
-       auth: {
-          user: 'thewrightlogistic@gmail.com', // generated ethereal user
-          pass: process.env.EMAIL_SECRET_PASS // generated ethereal password
-        },
-      });
 
-   
-    const mailOptions = {
-      from: data.email,
-      to: 'thewrightlogistic@gmail.com',
-      subject: `Message from ${data.subject}`,
-      html: `
-      <h3>Information</h3>
-      <ul>
-      <li>Full Name: ${data.fullName}</li>
-      <li>Phone: ${data.phone}</li>
-      <li>Email: ${data.email}</li>
-      </ul>
 
-      <h3>Message</h3>
-      <p>${data.message}</p>
-      `
-    };
-
-  setupTransport.sendEmail =(mailOptions, (err, res) =>{
-      if(err){
-        console.log(err)
-        res.send(err)
-      } else {
-        res.send('Your message was sent successfully')
-      }
-    })  
-
-  setupTransport.closed();
-  
-  
-  });
+router.post('/', async (req, res) =>{
+  try{
+    const {fullName, email, phone, subject, message} = req.body
+    EmailSender({fullName, email, phone, subject, message})
+     res.json({msg: " Your message was sent successfully"});
+  } catch (error){
+    res.status(404).json({msg: "Error"})
+  }
+})
 
 module.exports = router;

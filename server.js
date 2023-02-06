@@ -1,11 +1,12 @@
 const express = require('express');
 const path = require('path');
+// const http = require('http');
 const bodyParser = require('body-parser')
-const nodemailer = require('nodemailer')
 const mongoose = require('./database')
-const pino = require('express-pino-logger');
+// const pino = require('express-pino-logger');
 const middleware = require('./middleware')
-require('dotenv').config();
+const cors = require('cors')
+
 
 const app = express();
 
@@ -16,7 +17,6 @@ const userRouter = require('./routes/userRoutes');
 
 
 // view engine setup
-const cors = require('cors')
 app.set('view engine', 'ejs' );
 
 
@@ -24,7 +24,7 @@ app.set('view engine', 'ejs' );
 // STATIC FILES
 // app.use(logger('dev'));
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(cors())
 
